@@ -1,7 +1,7 @@
 {
   "name": "bitfomo",
   "productName": "BitFomo",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "main": "main.js",
   "license": "ISC",
   "author": "Long Le",
