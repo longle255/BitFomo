@@ -1,4 +1,9 @@
 const { app, BrowserWindow, ipcMain, Tray, nativeImage, Menu, MenuItem } = require('electron');
+const Binance = require('binance-api-node').default;
+const _ = require('lodash');
+
+const client = Binance();
+
 const path = require('path');
 
 const assetsDirectory = path.join(__dirname, 'assets');
@@ -6,10 +11,59 @@ const assetsDirectory = path.join(__dirname, 'assets');
 let tray = undefined;
 let window = undefined;
 
+const menuItems = [
+  new MenuItem({
+    label: 'Debug',
+    click() {
+      showWindow();
+      window.webContents.openDevTools();
+    }
+  }),
+  new MenuItem({
+    type: 'separator'
+  })
+];
+
+const fetchExchangeData = async () => {
+  const marketInfo = await client.exchangeInfo();
+  const quoteAssets = _.groupBy(marketInfo.symbols, 'quoteAsset');
+  for (let base of Object.keys(quoteAssets)) {
+    const pairs = quoteAssets[base].map(market => {
+      return {
+        label: market['baseAsset'],
+        role: 'submenu',
+        click() {
+          window.webContents.send('market-change', { market: market['symbol'].toLowerCase(), base });
+          // ipcMain.send('market-change', market['symbol'].toLowerCase());
+        }
+      };
+    });
+    const mnuItem = new MenuItem({
+      label: base,
+      submenu: pairs
+    });
+    menuItems.push(mnuItem);
+  }
+  menuItems.push(
+    new MenuItem({
+      type: 'separator'
+    })
+  );
+
+  menuItems.push(
+    new MenuItem({
+      label: 'Exit',
+      click() {
+        app.exit(0);
+      }
+    })
+  );
+};
 // Don't show the app in the doc
 app.dock.hide();
 
-app.on('ready', () => {
+app.on('ready', async () => {
+  await fetchExchangeData();
   createTray();
   createWindow();
 });
@@ -24,24 +78,7 @@ const createTray = () => {
 
   const contextMenu = new Menu();
 
-  contextMenu.append(
-    new MenuItem({
-      label: 'Debug',
-      click() {
-        showWindow();
-        window.webContents.openDevTools();
-      }
-    })
-  );
-
-  contextMenu.append(
-    new MenuItem({
-      label: 'Exit',
-      click() {
-        app.exit(0);
-      }
-    })
-  );
+  for (let i of menuItems) contextMenu.append(i);
 
   tray.on('right-click', function(event) {
     tray.popUpContextMenu(contextMenu);
@@ -119,6 +156,18 @@ ipcMain.on('show-window', () => {
   showWindow();
 });
 
-ipcMain.on('price-updated', (event, price) => {
-  tray.setTitle(`$${Math.round(price)}`);
+ipcMain.on('price-updated', (event, candle) => {
+  let c, price;
+  if (candle.base.toLowerCase().indexOf('usd') >= 0) {
+    c = '$';
+    price = Math.round(candle.price);
+  } else if (candle.base.toLowerCase().indexOf('btc') >= 0) {
+    c = '₿';
+    price = parseFloat(candle.price).toFixed(6);
+  } else {
+    c = candle.base;
+    price = parseFloat(candle.price).toFixed(6);
+  }
+  tray.setTitle(`${c} ${price}`);
+  tray.set
 });

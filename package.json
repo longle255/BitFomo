@@ -7,15 +7,19 @@
   "author": "Long Le",
   "scripts": {
     "start": "electron .",
-    "package": "electron-packager ./ --platform=darwin --arch=x64 --out=build --icon=./assets/AppIcon.icns --app-bundle-id=\"$BUILD_APP_BUNDLE_ID\" --overwrite --app-version=\"$BUILD_VERSION\" --build-version=\"$BUILD_VERSION\"",
-    "sign": "electron-osx-sign ./build/BitFomo-darwin-x64/BitFomo.app --platform=mas --identity=\"$BUILD_IDENTITY\" --verbose --provisioning-profile=\"$BUILD_PROFILE\"",
-    "flat": "electron-osx-flat ./build/BitFomo-darwin-x64/BitFomo.app --identity=\"$BUILD_FLAT_IDENTITY\" --verbose",
-    "release": "yarn package && yarn sign && yarn flat"
+    "package": "electron-packager ./ --platform=darwin --arch=x64 --out=dist/release --icon=./assets/AppIcon.icns --app-bundle-id=\"$BUILD_APP_BUNDLE_ID\" --overwrite --app-version=\"$BUILD_VERSION\" --build-version=\"$BUILD_VERSION\"",
+    "sign": "electron-osx-sign ./dist/release/BitFomo-darwin-x64/BitFomo.app --platform=mas --identity=\"$BUILD_IDENTITY\" --verbose --provisioning-profile=\"$BUILD_PROFILE\"",
+    "flat": "electron-osx-flat ./dist/release/BitFomo-darwin-x64/BitFomo.app --identity=\"$BUILD_FLAT_IDENTITY\" --verbose",
+    "release": "yarn package && yarn sign && yarn flat",
+    "package-dev": "electron-packager ./ --platform=darwin --arch=x64 --out=dist/test --icon=./assets/AppIcon.icns --app-bundle-id=com.bitfomo --overwrite --app-version=1.0.0 --build-version=1.0.0"
   },
   "devDependencies": {
     "electron": "6.1.7",
     "electron-osx-sign": "^0.4.15",
     "electron-packager": "^14.1.1"
   },
-  "dependencies": {}
+  "dependencies": {
+    "binance-api-node": "^0.9.12",
+    "lodash": "^4.17.15"
+  }
 }
