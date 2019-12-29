@@ -1,8 +1,13 @@
 # BitFomo
 
-Shows BTC/USDT in realtime on Binance
+Shows ticker prices in realtime on Binance. Supports all available markets
 
-## Running
+## Using
+
+Download the binary in the [releases](https://github.com/longle255/BitFomo/releases) section.
+
+
+## Developing
 
 ```sh
 git clone https://github.com/longle255/bitfomo
