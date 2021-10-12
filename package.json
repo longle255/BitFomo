@@ -14,7 +14,7 @@
     "package-dev": "electron-packager ./ --platform=darwin --arch=x64 --out=dist/test --icon=./assets/AppIcon.icns --app-bundle-id=com.bitfomo --overwrite --app-version=1.0.0 --build-version=1.0.0"
   },
   "devDependencies": {
-    "electron": "6.1.7",
+    "electron": "11.5.0",
     "electron-osx-sign": "^0.4.15",
     "electron-packager": "^14.1.1"
   },
